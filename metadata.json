@@ -1,0 +1,6 @@
+{
+  "name": "Unity 3D: CyberPulse Puzzle Platformer",
+  "description": "Полноценный 3D платформер с физическими головоломками, лазерами, гравитационными платформами и режимом Unity инспектора",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
