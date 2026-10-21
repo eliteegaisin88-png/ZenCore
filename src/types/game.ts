@@ -87,12 +87,23 @@ export interface CoreDef {
   id: string;
   position: [number, number, number];
 }
+export type EnergyCoreDef = CoreDef;
 
 export interface PortalDef {
   position: [number, number, number];
 }
 
-export type BiomeType = 'sakura' | 'spring' | 'summer' | 'autumn' | 'winter';
+export type BiomeType =
+  | 'sakura'
+  | 'spring'
+  | 'summer'
+  | 'autumn'
+  | 'winter'
+  | 'neon'
+  | 'crystal'
+  | 'volcanic'
+  | 'celestial'
+  | 'desert';
 
 export interface LevelDefinition {
   id: number;

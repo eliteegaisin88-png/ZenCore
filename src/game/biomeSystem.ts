@@ -123,6 +123,106 @@ export const BIOMES: Record<BiomeType, BiomeConfig> = {
     platformColor: '#0f1f33',
     recommendedTrackId: 'aurora-borealis',
   },
+  neon: {
+    id: 'neon',
+    name: 'Неоновый Киберпанк',
+    badge: 'Кибер-Биом',
+    icon: '⚡',
+    description: 'Синтвейв-мегаполис будущего, неоновые лазерные магистрали и электрический горизонт',
+    skyTopColor: 0x110228,
+    skyHorizonColor: 0x831843,
+    skyBottomColor: 0x050110,
+    fogColor: 0x140428,
+    fogDensity: 0.011,
+    hemiSkyColor: 0xec4899,
+    hemiGroundColor: 0x0284c7,
+    sunColor: 0x06b6d4,
+    sunIntensity: 1.5,
+    rimColor: 0xf43f5e,
+    accentGlow: '#f43f5e',
+    platformColor: '#120422',
+    recommendedTrackId: 'cosmic-chill',
+  },
+  crystal: {
+    id: 'crystal',
+    name: 'Кристальная Бездна',
+    badge: 'Кристалл-Биом',
+    icon: '💎',
+    description: 'Мерцающие аметистовые жеоды, парящие призмы и мистический преломляющий свет',
+    skyTopColor: 0x1e0b38,
+    skyHorizonColor: 0x3b0764,
+    skyBottomColor: 0x0f051d,
+    fogColor: 0x190830,
+    fogDensity: 0.012,
+    hemiSkyColor: 0xc084fc,
+    hemiGroundColor: 0x14052e,
+    sunColor: 0xe879f9,
+    sunIntensity: 1.45,
+    rimColor: 0xa855f7,
+    accentGlow: '#c084fc',
+    platformColor: '#1a0b33',
+    recommendedTrackId: 'aurora-borealis',
+  },
+  volcanic: {
+    id: 'volcanic',
+    name: 'Магматическая Цитадель',
+    badge: 'Вулкан-Биом',
+    icon: '🔥',
+    description: 'Раскалённый обсидиановый кратер, пламенные гейзеры и огненное зарево',
+    skyTopColor: 0x1c0505,
+    skyHorizonColor: 0x7f1d1d,
+    skyBottomColor: 0x0f0202,
+    fogColor: 0x220505,
+    fogDensity: 0.013,
+    hemiSkyColor: 0xf97316,
+    hemiGroundColor: 0x450a0a,
+    sunColor: 0xfde047,
+    sunIntensity: 1.6,
+    rimColor: 0xef4444,
+    accentGlow: '#ef4444',
+    platformColor: '#1f0909',
+    recommendedTrackId: 'cosmic-chill',
+  },
+  celestial: {
+    id: 'celestial',
+    name: 'Звёздный Астрал',
+    badge: 'Астрал-Биом',
+    icon: '🌌',
+    description: 'Глубокий космос, гравитационный дрейф, звёздные скопления и галактические туманности',
+    skyTopColor: 0x030712,
+    skyHorizonColor: 0x1e1b4b,
+    skyBottomColor: 0x020308,
+    fogColor: 0x070a1a,
+    fogDensity: 0.009,
+    hemiSkyColor: 0x60a5fa,
+    hemiGroundColor: 0x0f172a,
+    sunColor: 0x93c5fd,
+    sunIntensity: 1.4,
+    rimColor: 0x38bdf8,
+    accentGlow: '#38bdf8',
+    platformColor: '#0b1124',
+    recommendedTrackId: 'cosmic-chill',
+  },
+  desert: {
+    id: 'desert',
+    name: 'Золотой Мираж',
+    badge: 'Пустынный Биом',
+    icon: '🏜️',
+    description: 'Закатные барханы, древние песчаные святилища и лазурные оазисы',
+    skyTopColor: 0x451a03,
+    skyHorizonColor: 0xb45309,
+    skyBottomColor: 0x291002,
+    fogColor: 0x381905,
+    fogDensity: 0.011,
+    hemiSkyColor: 0xfbbf24,
+    hemiGroundColor: 0x78350f,
+    sunColor: 0xfef08a,
+    sunIntensity: 1.65,
+    rimColor: 0xf59e0b,
+    accentGlow: '#f59e0b',
+    platformColor: '#2b1708',
+    recommendedTrackId: 'starlight-lofi',
+  },
 };
 
 /**
@@ -238,6 +338,82 @@ export function createBiomeSkyDome(biomeType: BiomeType): THREE.Mesh {
     ctx.fillStyle = morningGrad;
     ctx.beginPath();
     ctx.arc(180, 140, 85, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (biomeType === 'neon') {
+    // Cyberpunk synthwave grid & glowing horizontal scanlines
+    ctx.save();
+    ctx.strokeStyle = 'rgba(244, 63, 94, 0.4)';
+    ctx.lineWidth = 1.5;
+    for (let y = 260; y < 512; y += 14) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(512, y);
+      ctx.stroke();
+    }
+    const retroSunGrad = ctx.createLinearGradient(0, 140, 0, 260);
+    retroSunGrad.addColorStop(0, '#fde047');
+    retroSunGrad.addColorStop(0.5, '#f43f5e');
+    retroSunGrad.addColorStop(1, '#a855f7');
+    ctx.fillStyle = retroSunGrad;
+    ctx.beginPath();
+    ctx.arc(256, 200, 60, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (biomeType === 'crystal') {
+    // Prismatic crystalline nebula & glowing starry geode
+    ctx.save();
+    const cGrad = ctx.createRadialGradient(256, 150, 10, 256, 150, 120);
+    cGrad.addColorStop(0, 'rgba(232, 121, 249, 0.9)');
+    cGrad.addColorStop(0.4, 'rgba(192, 132, 252, 0.6)');
+    cGrad.addColorStop(1, 'rgba(30, 11, 56, 0)');
+    ctx.fillStyle = cGrad;
+    ctx.beginPath();
+    ctx.arc(256, 150, 120, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (biomeType === 'volcanic') {
+    // Molten crimson ash clouds & fiery eclipse
+    ctx.save();
+    const vGrad = ctx.createRadialGradient(256, 140, 15, 256, 140, 95);
+    vGrad.addColorStop(0, 'rgba(253, 224, 71, 0.95)');
+    vGrad.addColorStop(0.4, 'rgba(239, 68, 68, 0.8)');
+    vGrad.addColorStop(0.8, 'rgba(127, 29, 29, 0.4)');
+    vGrad.addColorStop(1, 'rgba(28, 5, 5, 0)');
+    ctx.fillStyle = vGrad;
+    ctx.beginPath();
+    ctx.arc(256, 140, 95, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (biomeType === 'celestial') {
+    // Deep astral galactic spiral & dense starfield
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    for (let i = 0; i < 200; i++) {
+      const sx = (i * 157) % 512;
+      const sy = (i * 93) % 400;
+      ctx.fillRect(sx, sy, (i % 7 === 0 ? 3 : 1.5), (i % 7 === 0 ? 3 : 1.5));
+    }
+    const galGrad = ctx.createRadialGradient(300, 160, 10, 300, 160, 140);
+    galGrad.addColorStop(0, 'rgba(96, 165, 250, 0.5)');
+    galGrad.addColorStop(0.5, 'rgba(147, 51, 234, 0.35)');
+    galGrad.addColorStop(1, 'rgba(3, 7, 18, 0)');
+    ctx.fillStyle = galGrad;
+    ctx.beginPath();
+    ctx.arc(300, 160, 140, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (biomeType === 'desert') {
+    // Blazing golden sun & desert mirage horizon
+    ctx.save();
+    const dGrad = ctx.createRadialGradient(256, 130, 20, 256, 130, 110);
+    dGrad.addColorStop(0, 'rgba(254, 240, 138, 1)');
+    dGrad.addColorStop(0.3, 'rgba(245, 158, 11, 0.8)');
+    dGrad.addColorStop(0.7, 'rgba(180, 83, 9, 0.35)');
+    dGrad.addColorStop(1, 'rgba(69, 26, 3, 0)');
+    ctx.fillStyle = dGrad;
+    ctx.beginPath();
+    ctx.arc(256, 130, 110, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -426,6 +602,112 @@ export function createBiomeDistantScenery(biomeType: BiomeType): THREE.Group {
     const col3 = new THREE.Mesh(colGeo, archMat);
     col3.position.set(65, 18, 95);
     group.add(col3);
+  } else if (biomeType === 'neon') {
+    // Cyberpunk Neon Skyscrapers & Holographic Grid Monoliths
+    const cyberMat = new THREE.MeshStandardMaterial({
+      color: 0x090514,
+      roughness: 0.2,
+      metalness: 0.9,
+    });
+    const neonPink = new THREE.MeshBasicMaterial({ color: 0xf43f5e });
+    const neonCyan = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+
+    for (let b = 0; b < 6; b++) {
+      const h = 50 + (b % 3) * 25;
+      const bGeo = new THREE.BoxGeometry(10, h, 10);
+      const bldg = new THREE.Mesh(bGeo, cyberMat);
+      bldg.position.set(-70 + b * 26, h / 2 - 10, 85 + (b % 2) * 20);
+      group.add(bldg);
+
+      // Neon roof trim
+      const trimGeo = new THREE.BoxGeometry(10.2, 1.2, 10.2);
+      const trim = new THREE.Mesh(trimGeo, b % 2 === 0 ? neonPink : neonCyan);
+      trim.position.set(-70 + b * 26, h - 10, 85 + (b % 2) * 20);
+      group.add(trim);
+    }
+  } else if (biomeType === 'crystal') {
+    // Giant Levitating Amethyst & Diamond Geodes
+    const geodeMat = new THREE.MeshStandardMaterial({
+      color: 0x3b0764,
+      roughness: 0.1,
+      metalness: 0.85,
+      emissive: 0xa855f7,
+      emissiveIntensity: 0.5,
+    });
+    for (let c = 0; c < 5; c++) {
+      const cGeo = new THREE.OctahedronGeometry(14 + (c % 2) * 6, 0);
+      const crystal = new THREE.Mesh(cGeo, geodeMat);
+      crystal.position.set(-65 + c * 30, 20 + Math.sin(c) * 12, 90 + (c % 2) * 15);
+      crystal.scale.set(0.8, 2.2, 0.8);
+      group.add(crystal);
+    }
+  } else if (biomeType === 'volcanic') {
+    // Molten Jagged Basalt Horns with Lava Veins
+    const basaltMat = new THREE.MeshStandardMaterial({
+      color: 0x140505,
+      roughness: 0.95,
+      metalness: 0.1,
+    });
+    const lavaMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    for (let v = 0; v < 5; v++) {
+      const coneGeo = new THREE.ConeGeometry(22, 60, 5);
+      const horn = new THREE.Mesh(coneGeo, basaltMat);
+      horn.position.set(-70 + v * 32, 15, 95 + (v % 2) * 20);
+      group.add(horn);
+
+      // Lava glow ring at base
+      const lavaGeo = new THREE.TorusGeometry(18, 1.5, 6, 16);
+      const lava = new THREE.Mesh(lavaGeo, lavaMat);
+      lava.rotation.x = Math.PI / 2;
+      lava.position.set(-70 + v * 32, 2, 95 + (v % 2) * 20);
+      group.add(lava);
+    }
+  } else if (biomeType === 'celestial') {
+    // Cosmic Monoliths & Orbital Quantum Rings
+    const astralMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7,
+      roughness: 0.15,
+      metalness: 0.95,
+      emissive: 0x38bdf8,
+      emissiveIntensity: 0.4,
+    });
+    const ringGeo = new THREE.TorusGeometry(28, 1.2, 12, 48);
+    const orbitalRing = new THREE.Mesh(ringGeo, astralMat);
+    orbitalRing.position.set(0, 35, 120);
+    orbitalRing.rotation.x = 0.8;
+    orbitalRing.rotation.y = 0.5;
+    group.add(orbitalRing);
+
+    for (let m = 0; m < 4; m++) {
+      const monoGeo = new THREE.BoxGeometry(5, 55, 3);
+      const mono = new THREE.Mesh(monoGeo, astralMat);
+      mono.position.set(-60 + m * 38, 25, 90 + (m % 2) * 25);
+      group.add(mono);
+    }
+  } else if (biomeType === 'desert') {
+    // Ancient Sandstone Arches & Mirage Obelisks
+    const sandMat = new THREE.MeshStandardMaterial({
+      color: 0x78350f,
+      roughness: 0.9,
+      metalness: 0.05,
+    });
+    const goldPillarMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.8,
+      roughness: 0.3,
+    });
+    for (let d = 0; d < 5; d++) {
+      const colGeo = new THREE.CylinderGeometry(3.5, 4.5, 45, 8);
+      const col = new THREE.Mesh(colGeo, sandMat);
+      col.position.set(-65 + d * 30, 15, 85 + (d % 2) * 20);
+      group.add(col);
+
+      // Gold cap
+      const capGeo = new THREE.ConeGeometry(5, 8, 8);
+      const cap = new THREE.Mesh(capGeo, goldPillarMat);
+      cap.position.set(-65 + d * 30, 40, 85 + (d % 2) * 20);
+      group.add(cap);
+    }
   }
 
   return group;
@@ -493,6 +775,51 @@ export function createBiomeWeatherParticles(biomeType: BiomeType): {
         rotSpeed: 1.0 + Math.random() * 1.5,
         phase: Math.random() * Math.PI * 2,
       });
+    } else if (biomeType === 'neon') {
+      // Neon digital sparks rising upward rapidly
+      velocities.push({
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: 1.5 + Math.random() * 2.2,
+        vz: (Math.random() - 0.5) * 1.2,
+        rotSpeed: 3.0 + Math.random() * 4.0,
+        phase: Math.random() * Math.PI * 2,
+      });
+    } else if (biomeType === 'crystal') {
+      // Prismatic crystal motes hovering and twinkling
+      velocities.push({
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.4,
+        vz: (Math.random() - 0.5) * 0.5,
+        rotSpeed: 1.8 + Math.random() * 2.5,
+        phase: Math.random() * Math.PI * 2,
+      });
+    } else if (biomeType === 'volcanic') {
+      // Molten embers rising with heat drafts
+      velocities.push({
+        vx: (Math.random() - 0.5) * 1.0,
+        vy: 1.2 + Math.random() * 1.8,
+        vz: (Math.random() - 0.5) * 1.0,
+        rotSpeed: 2.2 + Math.random() * 2.0,
+        phase: Math.random() * Math.PI * 2,
+      });
+    } else if (biomeType === 'celestial') {
+      // Celestial stardust floating gently in zero-gravity orbit
+      velocities.push({
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.6,
+        vz: (Math.random() - 0.5) * 0.7,
+        rotSpeed: 1.5 + Math.random() * 2.0,
+        phase: Math.random() * Math.PI * 2,
+      });
+    } else if (biomeType === 'desert') {
+      // Golden sand grains gusting horizontally across desert
+      velocities.push({
+        vx: 2.2 + Math.random() * 1.8,
+        vy: -(0.2 + Math.random() * 0.4),
+        vz: 0.6 + Math.random() * 0.8,
+        rotSpeed: 2.5 + Math.random() * 3.0,
+        phase: Math.random() * Math.PI * 2,
+      });
     } else {
       // Summer fireflies float upward and glow
       velocities.push({
@@ -555,6 +882,65 @@ export function createBiomeWeatherParticles(biomeType: BiomeType): {
     pctx.beginPath();
     pctx.arc(32, 32, 26, 0, Math.PI * 2);
     pctx.fill();
+  } else if (biomeType === 'neon') {
+    // Cyber spark / diamond digital glyph
+    const nGrad = pctx.createRadialGradient(32, 32, 2, 32, 32, 24);
+    nGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    nGrad.addColorStop(0.3, 'rgba(6, 182, 212, 0.9)');
+    nGrad.addColorStop(0.7, 'rgba(244, 63, 94, 0.6)');
+    nGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pctx.fillStyle = nGrad;
+    pctx.beginPath();
+    pctx.moveTo(32, 8);
+    pctx.lineTo(56, 32);
+    pctx.lineTo(32, 56);
+    pctx.lineTo(8, 32);
+    pctx.closePath();
+    pctx.fill();
+  } else if (biomeType === 'crystal') {
+    // Sparkling amethyst crystal shard
+    const cGrad = pctx.createRadialGradient(32, 32, 2, 32, 32, 26);
+    cGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    cGrad.addColorStop(0.4, 'rgba(232, 121, 249, 0.9)');
+    cGrad.addColorStop(0.8, 'rgba(168, 85, 247, 0.4)');
+    cGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pctx.fillStyle = cGrad;
+    pctx.beginPath();
+    pctx.arc(32, 32, 26, 0, Math.PI * 2);
+    pctx.fill();
+  } else if (biomeType === 'volcanic') {
+    // Glowing molten ember
+    const vGrad = pctx.createRadialGradient(32, 32, 2, 32, 32, 26);
+    vGrad.addColorStop(0, 'rgba(254, 240, 138, 1)');
+    vGrad.addColorStop(0.4, 'rgba(249, 115, 22, 0.9)');
+    vGrad.addColorStop(0.8, 'rgba(239, 68, 68, 0.4)');
+    vGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pctx.fillStyle = vGrad;
+    pctx.beginPath();
+    pctx.arc(32, 32, 26, 0, Math.PI * 2);
+    pctx.fill();
+  } else if (biomeType === 'celestial') {
+    // Shimmering stardust diamond
+    const sGrad = pctx.createRadialGradient(32, 32, 1, 32, 32, 26);
+    sGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    sGrad.addColorStop(0.4, 'rgba(96, 165, 250, 0.9)');
+    sGrad.addColorStop(0.7, 'rgba(192, 132, 252, 0.4)');
+    sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pctx.fillStyle = sGrad;
+    pctx.beginPath();
+    pctx.arc(32, 32, 26, 0, Math.PI * 2);
+    pctx.fill();
+  } else if (biomeType === 'desert') {
+    // Golden sand mote
+    const dGrad = pctx.createRadialGradient(32, 32, 2, 32, 32, 24);
+    dGrad.addColorStop(0, 'rgba(254, 240, 138, 1)');
+    dGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.85)');
+    dGrad.addColorStop(0.9, 'rgba(180, 83, 9, 0.3)');
+    dGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pctx.fillStyle = dGrad;
+    pctx.beginPath();
+    pctx.arc(32, 32, 24, 0, Math.PI * 2);
+    pctx.fill();
   } else {
     // Summer warm firefly
     const rad = pctx.createRadialGradient(32, 32, 2, 32, 32, 26);
@@ -570,13 +956,15 @@ export function createBiomeWeatherParticles(biomeType: BiomeType): {
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
 
+  const isAdditive = ['winter', 'summer', 'neon', 'crystal', 'volcanic', 'celestial'].includes(biomeType);
+
   const material = new THREE.PointsMaterial({
-    size: biomeType === 'winter' ? 0.9 : 1.2,
+    size: biomeType === 'winter' || biomeType === 'desert' ? 0.9 : 1.25,
     map: texture,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.88,
     depthWrite: false,
-    blending: biomeType === 'winter' || biomeType === 'summer' ? THREE.AdditiveBlending : THREE.NormalBlending,
+    blending: isAdditive ? THREE.AdditiveBlending : THREE.NormalBlending,
   });
 
   const points = new THREE.Points(geometry, material);
@@ -610,12 +998,16 @@ export function createBiomeWeatherParticles(biomeType: BiomeType): {
         px += (v.vx + flutter * 0.5) * delta * 3.5;
         py += v.vy * delta * 3.2;
         pz += (v.vz + flutter * 0.4) * delta * 3.5;
-      } else if (biomeType === 'summer') {
-        px += (v.vx + flutter * 0.3) * delta * 2.5;
-        py += v.vy * delta * 3.0;
-        pz += (v.vz + Math.cos(time * 0.8) * 0.3) * delta * 2.5;
+      } else if (biomeType === 'summer' || biomeType === 'volcanic' || biomeType === 'neon') {
+        px += (v.vx + flutter * 0.3) * delta * 3.0;
+        py += v.vy * delta * 3.2;
+        pz += (v.vz + Math.cos(time * 0.8) * 0.3) * delta * 3.0;
+      } else if (biomeType === 'desert') {
+        px += (v.vx + flutter * 0.3) * delta * 5.0;
+        py += v.vy * delta * 2.5;
+        pz += (v.vz + Math.sin(time) * 0.3) * delta * 4.0;
       } else {
-        // Spring
+        // Spring, crystal, celestial
         px += (v.vx + flutter * 0.4) * delta * 2.5;
         py += (v.vy + flutter * 0.3) * delta * 2.5;
         pz += (v.vz + Math.cos(time * 1.1) * 0.4) * delta * 2.5;
@@ -625,8 +1017,10 @@ export function createBiomeWeatherParticles(biomeType: BiomeType): {
       const halfX = spreadX / 2;
       const halfZ = spreadZ / 2;
 
+      const risesUp = ['summer', 'volcanic', 'neon'].includes(biomeType);
+
       if (py < playerPos.y - 4 || py > playerPos.y + spreadY + 4) {
-        py = biomeType === 'summer' ? playerPos.y - 2 : playerPos.y + spreadY;
+        py = risesUp ? playerPos.y - 2 : playerPos.y + spreadY;
         px = playerPos.x + (Math.random() - 0.5) * spreadX;
         pz = playerPos.z + (Math.random() - 0.5) * spreadZ;
       }
@@ -736,6 +1130,70 @@ export function createBiomePlatformTexture(biomeType: BiomeType): THREE.CanvasTe
       ctx.moveTo(256 + Math.cos(ang) * 36, 256 + Math.sin(ang) * 36);
       ctx.lineTo(256 + Math.cos(ang) * 44, 256 + Math.sin(ang) * 44);
     }
+    ctx.stroke();
+  } else if (biomeType === 'autumn') {
+    // Maple leaf 5-point star
+    ctx.beginPath();
+    for (let a = 0; a < 5; a++) {
+      const ang = (a * Math.PI * 2) / 5 - Math.PI / 2;
+      ctx.moveTo(256, 256);
+      ctx.lineTo(256 + Math.cos(ang) * 28, 256 + Math.sin(ang) * 28);
+    }
+    ctx.stroke();
+  } else if (biomeType === 'spring') {
+    // 4-leaf clover emblem
+    for (let a = 0; a < 4; a++) {
+      const ang = (a * Math.PI) / 2;
+      ctx.beginPath();
+      ctx.arc(256 + Math.cos(ang) * 16, 256 + Math.sin(ang) * 16, 12, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
+      ctx.fill();
+    }
+  } else if (biomeType === 'neon') {
+    // Cyber hexagonal circuit
+    ctx.beginPath();
+    for (let a = 0; a < 6; a++) {
+      const ang = (a * Math.PI) / 3;
+      const x = 256 + Math.cos(ang) * 24;
+      const y = 256 + Math.sin(ang) * 24;
+      if (a === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  } else if (biomeType === 'crystal') {
+    // Prismatic diamond crystal
+    ctx.beginPath();
+    ctx.moveTo(256, 230);
+    ctx.lineTo(282, 256);
+    ctx.lineTo(256, 282);
+    ctx.lineTo(230, 256);
+    ctx.closePath();
+    ctx.stroke();
+  } else if (biomeType === 'volcanic') {
+    // Volcanic flame crest
+    ctx.beginPath();
+    ctx.moveTo(256, 226);
+    ctx.bezierCurveTo(276, 244, 276, 274, 256, 286);
+    ctx.bezierCurveTo(236, 274, 236, 244, 256, 226);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+    ctx.fill();
+    ctx.stroke();
+  } else if (biomeType === 'celestial') {
+    // Orbital ring with center star
+    ctx.beginPath();
+    ctx.ellipse(256, 256, 28, 12, Math.PI / 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(256, 256, 6, 0, Math.PI * 2);
+    ctx.fillStyle = config.accentGlow;
+    ctx.fill();
+  } else if (biomeType === 'desert') {
+    // Golden sun medallion with sand dunes
+    ctx.beginPath();
+    ctx.arc(256, 256, 16, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.fill();
     ctx.stroke();
   }
   ctx.restore();

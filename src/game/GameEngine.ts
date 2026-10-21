@@ -54,6 +54,7 @@ export interface EngineCallbacks {
   onPointerLockChange?: (isLocked: boolean) => void;
   onCameraModeChange?: (mode: 'third' | 'close' | 'top') => void;
   onConfigChange?: (config: PlayerConfig) => void;
+  onOpenMap?: () => void;
 }
 
 export class GameEngine {
@@ -742,6 +743,11 @@ export class GameEngine {
         this.cycleCameraMode();
       }
       if (e.code === 'KeyM' && !e.repeat) {
+        if (this.callbacks.onOpenMap) {
+          this.callbacks.onOpenMap();
+        }
+      }
+      if (e.code === 'KeyN' && !e.repeat) {
         const next = soundSystem.nextTrack();
         this.logConsole('info', `🎵 Музыка [${next.icon}]: ${next.title} (${next.genre})`);
       }
@@ -1387,6 +1393,30 @@ export class GameEngine {
 
     // Floating idle oscillation
     this.characterRig.body.position.y = Math.sin(this.levelTime * 5) * 0.04;
+
+    // Dynamic aero-wings flare open during sprint, high-speed or mid-air flight
+    if (this.characterRig.leftWing && this.characterRig.rightWing) {
+      const isAeroFlight = !this.isGrounded || this.isSprinting;
+      const targetWingZ = isAeroFlight ? 0.6 : 0.12;
+      this.characterRig.leftWing.rotation.z = THREE.MathUtils.lerp(
+        this.characterRig.leftWing.rotation.z,
+        targetWingZ,
+        12 * delta
+      );
+      this.characterRig.rightWing.rotation.z = THREE.MathUtils.lerp(
+        this.characterRig.rightWing.rotation.z,
+        -targetWingZ,
+        12 * delta
+      );
+    }
+
+    // Aerodynamic flight tilt: robot leans forward when dashing
+    const targetTiltX = isMoving ? (this.isSprinting ? 0.28 : 0.16) : 0;
+    this.characterRig.body.rotation.x = THREE.MathUtils.lerp(
+      this.characterRig.body.rotation.x,
+      targetTiltX,
+      10 * delta
+    );
 
     // Update interact prompt
     this.checkInteractPrompt();

@@ -682,6 +682,72 @@ export function createNearbyScenicIslands(biome: BiomeType, levelLength = 40): T
         pond.position.set(pos.x, surfaceY, pos.z);
         group.add(pond);
       }
+    } else if (biome === 'neon') {
+      // Cyber holographic tower + neon beacon
+      const towerGeo = new THREE.BoxGeometry(1.6, 6.0, 1.6);
+      const towerMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        emissive: 0x06b6d4,
+        emissiveIntensity: 0.8,
+        roughness: 0.2,
+      });
+      const tower = new THREE.Mesh(towerGeo, towerMat);
+      tower.position.set(pos.x, surfaceY + 3.0, pos.z);
+      group.add(tower);
+    } else if (biome === 'crystal') {
+      // Amethyst cluster
+      const gemGeo = new THREE.OctahedronGeometry(1.8, 0);
+      const gemMat = new THREE.MeshStandardMaterial({
+        color: 0xc084fc,
+        emissive: 0x9333ea,
+        emissiveIntensity: 0.7,
+        roughness: 0.1,
+        metalness: 0.9,
+      });
+      const gem = new THREE.Mesh(gemGeo, gemMat);
+      gem.position.set(pos.x, surfaceY + 2.0, pos.z);
+      gem.scale.set(1, 1.8, 1);
+      group.add(gem);
+    } else if (biome === 'volcanic') {
+      // Basalt spire + lava vent
+      const spireGeo = new THREE.ConeGeometry(2.0, 5.0, 5);
+      const spireMat = new THREE.MeshStandardMaterial({
+        color: 0x1c1917,
+        emissive: 0xef4444,
+        emissiveIntensity: 0.5,
+        roughness: 0.9,
+      });
+      const spire = new THREE.Mesh(spireGeo, spireMat);
+      spire.position.set(pos.x, surfaceY + 2.5, pos.z);
+      group.add(spire);
+    } else if (biome === 'celestial') {
+      // Astral monolith
+      const monoGeo = new THREE.BoxGeometry(1.4, 7.0, 1.4);
+      const monoMat = new THREE.MeshStandardMaterial({
+        color: 0x1e1b4b,
+        emissive: 0x60a5fa,
+        emissiveIntensity: 0.7,
+        roughness: 0.2,
+      });
+      const mono = new THREE.Mesh(monoGeo, monoMat);
+      mono.position.set(pos.x, surfaceY + 3.5, pos.z);
+      group.add(mono);
+    } else if (biome === 'desert') {
+      // Desert sandstone obelisk + oasis pond
+      const obeliskGeo = new THREE.CylinderGeometry(0.8, 1.4, 6.0, 4);
+      const obeliskMat = new THREE.MeshStandardMaterial({
+        color: 0x78350f,
+        roughness: 0.8,
+      });
+      const obelisk = new THREE.Mesh(obeliskGeo, obeliskMat);
+      obelisk.position.set(pos.x - 1.2, surfaceY + 3.0, pos.z - 1.0);
+      group.add(obelisk);
+
+      if (idx === 1 || idx === 2) {
+        const pond = createScenicPond(biome, 2.3);
+        pond.position.set(pos.x + 0.8, surfaceY, pos.z + 0.8);
+        group.add(pond);
+      }
     } else {
       // Summer
       const tree = createSummerTree(1.3);
@@ -743,6 +809,21 @@ function createWaterfallTexture(biome: BiomeType): {
   } else if (biome === 'autumn') {
     baseColor = 'rgba(56, 189, 248, 0.45)';
     deepColor = 'rgba(30, 64, 175, 0.65)';
+  } else if (biome === 'neon') {
+    baseColor = 'rgba(6, 182, 212, 0.65)';
+    deepColor = 'rgba(244, 63, 94, 0.75)';
+  } else if (biome === 'crystal') {
+    baseColor = 'rgba(192, 132, 252, 0.6)';
+    deepColor = 'rgba(126, 34, 206, 0.75)';
+  } else if (biome === 'volcanic') {
+    baseColor = 'rgba(249, 115, 22, 0.75)';
+    deepColor = 'rgba(185, 28, 28, 0.85)';
+  } else if (biome === 'celestial') {
+    baseColor = 'rgba(96, 165, 250, 0.6)';
+    deepColor = 'rgba(59, 130, 246, 0.8)';
+  } else if (biome === 'desert') {
+    baseColor = 'rgba(45, 212, 191, 0.6)';
+    deepColor = 'rgba(15, 118, 110, 0.75)';
   }
 
   // Base translucent water background

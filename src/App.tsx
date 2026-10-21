@@ -11,6 +11,7 @@ import { UnityInspector } from './components/UnityInspector';
 import { GameHUD } from './components/GameHUD';
 import { TouchControls } from './components/TouchControls';
 import { VictoryModal } from './components/VictoryModal';
+import { WorldMapModal } from './components/WorldMapModal';
 import { soundSystem, MusicTrack } from './audio/soundSystem';
 import {
   PlayerConfig,
@@ -24,6 +25,10 @@ export default function App() {
 
   // Game state
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const currentLevelIndexRef = useRef(0);
+  currentLevelIndexRef.current = currentLevelIndex;
+
+  const [isWorldMapOpen, setIsWorldMapOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -92,6 +97,21 @@ export default function App() {
       onVictory: (timeSeconds) => {
         setVictoryTime(timeSeconds);
         setIsVictory(true);
+        try {
+          const lvl = LEVELS[currentLevelIndexRef.current] || LEVELS[0];
+          const saved = localStorage.getItem('warpbound_progress');
+          const progress = saved ? JSON.parse(saved) : {};
+          const timeStar = timeSeconds <= (lvl.targetTimeSeconds || 60);
+          const stars = 2 + (timeStar ? 1 : 0);
+          const prev = progress[lvl.id] || { stars: 0, bestTime: 999999 };
+          progress[lvl.id] = {
+            stars: Math.max(prev.stars || 0, stars),
+            bestTime: Math.min(prev.bestTime || 999999, timeSeconds),
+          };
+          localStorage.setItem('warpbound_progress', JSON.stringify(progress));
+        } catch {
+          // ignore
+        }
       },
       onGameObjectList: (objects) => {
         setGameObjects(objects);
@@ -109,6 +129,9 @@ export default function App() {
       },
       onConfigChange: (config) => {
         setPlayerConfig({ ...config });
+      },
+      onOpenMap: () => {
+        setIsWorldMapOpen((prev) => !prev);
       },
     });
 
@@ -304,6 +327,7 @@ export default function App() {
         levels={LEVELS}
         currentLevelIndex={currentLevelIndex}
         onSelectLevel={handleSelectLevel}
+        onOpenWorldMap={() => setIsWorldMapOpen(true)}
         isPaused={isPaused}
         onTogglePause={handleTogglePause}
         onResetLevel={handleResetLevel}
@@ -324,6 +348,9 @@ export default function App() {
         onNextTrack={handleNextTrack}
         onPrevTrack={handlePrevTrack}
         onToggleMusic={handleToggleMusic}
+        coresCollected={coresCollected}
+        totalCores={totalCores}
+        elapsedTime={elapsedTime}
       />
 
       {/* In-Game HUD */}
@@ -372,6 +399,15 @@ export default function App() {
         onSprint={handleVirtualSprint}
       />
 
+      {/* World Map & 60-Level Browser Modal */}
+      <WorldMapModal
+        isOpen={isWorldMapOpen}
+        onClose={() => setIsWorldMapOpen(false)}
+        levels={LEVELS}
+        currentLevelIndex={currentLevelIndex}
+        onSelectLevel={handleSelectLevel}
+      />
+
       {/* Victory Celebration Modal */}
       {isVictory && (
         <VictoryModal
@@ -381,6 +417,10 @@ export default function App() {
           totalCores={totalCores}
           onNextLevel={handleNextLevel}
           onReplay={handleReplay}
+          onOpenWorldMap={() => {
+            setIsVictory(false);
+            setIsWorldMapOpen(true);
+          }}
           hasNextLevel={currentLevelIndex + 1 < LEVELS.length}
         />
       )}

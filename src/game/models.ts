@@ -149,6 +149,67 @@ export function createContactShadowTexture(): THREE.CanvasTexture {
 }
 
 /**
+ * Procedural cyber visor HUD eye texture with glowing digital pupils and reticle
+ */
+export function createRobotVisorTexture(glowColor: string = '#38bdf8'): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d')!;
+
+  // Dark glassy visor base
+  ctx.fillStyle = '#050b14';
+  ctx.fillRect(0, 0, 256, 128);
+
+  // Digital scanlines
+  ctx.fillStyle = 'rgba(6, 182, 212, 0.08)';
+  for (let y = 0; y < 128; y += 4) {
+    ctx.fillRect(0, y, 256, 2);
+  }
+
+  // Dual glowing futuristic eyes
+  const eyeColor = glowColor || '#38bdf8';
+  const drawEye = (cx: number) => {
+    // Outer hexagonal/bracket eye glow
+    ctx.save();
+    ctx.shadowColor = eyeColor;
+    ctx.shadowBlur = 18;
+    ctx.strokeStyle = eyeColor;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect(cx - 36, 42, 72, 44, 8);
+    ctx.stroke();
+
+    // Inner bright pupil core
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(cx - 24, 52, 48, 24, 4);
+    ctx.fill();
+
+    // High-tech pupil crosshairs
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, 64);
+    ctx.lineTo(cx + 14, 64);
+    ctx.stroke();
+
+    // Tech corners
+    ctx.fillStyle = eyeColor;
+    ctx.fillRect(cx - 32, 36, 12, 3);
+    ctx.fillRect(cx + 20, 36, 12, 3);
+    ctx.restore();
+  };
+
+  drawEye(74);
+  drawEye(182);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+/**
  * 3D Robot Character Generator & Animation Rig
  */
 export interface CharacterRig {
@@ -167,6 +228,11 @@ export interface CharacterRig {
   shadow: THREE.Mesh;
   primaryMaterial: THREE.MeshStandardMaterial;
   glowMaterial: THREE.MeshBasicMaterial;
+  // Enhanced aesthetic components
+  leftWing?: THREE.Mesh;
+  rightWing?: THREE.Mesh;
+  chestReactor?: THREE.Mesh;
+  backpack?: THREE.Group;
 }
 
 export function createCharacterMesh(primaryColor: string = '#0284c7', glowColor: string = '#38bdf8'): CharacterRig {
@@ -176,108 +242,307 @@ export function createCharacterMesh(primaryColor: string = '#0284c7', glowColor:
   const body = new THREE.Group();
   root.add(body);
 
+  // High-end PBR materials
   const primaryMaterial = new THREE.MeshStandardMaterial({
     color: new THREE.Color(primaryColor),
-    metalness: 0.88,
-    roughness: 0.2,
+    metalness: 0.85,
+    roughness: 0.22,
   });
 
-  const darkMetalMaterial = new THREE.MeshStandardMaterial({
-    color: 0x111827,
+  const darkTitaniumMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0f172a,
     metalness: 0.95,
     roughness: 0.25,
+  });
+
+  const goldAccentMaterial = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    metalness: 0.9,
+    roughness: 0.2,
   });
 
   const glowMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(glowColor),
   });
 
-  // Torso
-  const torsoGeo = new THREE.CylinderGeometry(0.34, 0.24, 0.62, 16);
-  const torso = new THREE.Mesh(torsoGeo, primaryMaterial);
-  torso.castShadow = true;
-  torso.position.y = 0.6;
-  body.add(torso);
+  // -------------------------------------------------------------
+  // 1. TORSO & LAYERED CHEST ARMOR
+  // -------------------------------------------------------------
+  // Inner mechanical chassis
+  const innerChassisGeo = new THREE.CylinderGeometry(0.3, 0.22, 0.65, 16);
+  const innerChassis = new THREE.Mesh(innerChassisGeo, darkTitaniumMaterial);
+  innerChassis.position.y = 0.6;
+  innerChassis.castShadow = true;
+  body.add(innerChassis);
 
-  // Chest reactor emblem with pulsating glow
-  const reactorGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.06, 16);
-  reactorGeo.rotateX(Math.PI / 2);
-  const reactor = new THREE.Mesh(reactorGeo, glowMaterial);
-  reactor.name = 'ChestReactor';
-  reactor.position.set(0, 0.66, 0.29);
-  body.add(reactor);
+  // Sculpted front breastplate with beveled cyber-chest
+  const chestPlateGeo = new THREE.BoxGeometry(0.56, 0.44, 0.28);
+  const chestPlate = new THREE.Mesh(chestPlateGeo, primaryMaterial);
+  chestPlate.position.set(0, 0.68, 0.14);
+  chestPlate.castShadow = true;
+  body.add(chestPlate);
 
-  // Rotating Gyro Gimbal Ring around waist
-  const gyroGeo = new THREE.TorusGeometry(0.38, 0.035, 8, 24);
-  gyroGeo.rotateX(Math.PI / 2);
-  const gyroRing = new THREE.Mesh(gyroGeo, darkMetalMaterial);
-  gyroRing.position.y = 0.42;
-  body.add(gyroRing);
+  // Gold accent trims on chest
+  const trimGeo = new THREE.BoxGeometry(0.58, 0.05, 0.3);
+  const trim = new THREE.Mesh(trimGeo, goldAccentMaterial);
+  trim.position.set(0, 0.86, 0.14);
+  body.add(trim);
 
-  // Head
-  const headGeo = new THREE.SphereGeometry(0.32, 24, 20);
-  const head = new THREE.Mesh(headGeo, darkMetalMaterial);
+  // Recessed glowing Arc-Reactor with multi-ring housing
+  const reactorHousingGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.08, 20);
+  reactorHousingGeo.rotateX(Math.PI / 2);
+  const reactorHousing = new THREE.Mesh(reactorHousingGeo, darkTitaniumMaterial);
+  reactorHousing.position.set(0, 0.66, 0.28);
+  body.add(reactorHousing);
+
+  const chestReactor = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.11, 0.11, 0.09, 20).rotateX(Math.PI / 2),
+    glowMaterial
+  );
+  chestReactor.name = 'ChestReactor';
+  chestReactor.position.set(0, 0.66, 0.30);
+  body.add(chestReactor);
+
+  // Armored Shoulder Pauldrons
+  const pauldronGeo = new THREE.SphereGeometry(0.18, 14, 12);
+  pauldronGeo.scale(1.2, 0.8, 1.0);
+  const shoulderL = new THREE.Mesh(pauldronGeo, primaryMaterial);
+  shoulderL.position.set(-0.46, 0.84, 0);
+  shoulderL.castShadow = true;
+  body.add(shoulderL);
+
+  const shoulderR = new THREE.Mesh(pauldronGeo, primaryMaterial);
+  shoulderR.position.set(0.46, 0.84, 0);
+  shoulderR.castShadow = true;
+  body.add(shoulderR);
+
+  // -------------------------------------------------------------
+  // 2. BACKPACK JETPACK & AERO FLIGHT WINGS
+  // -------------------------------------------------------------
+  const backpack = new THREE.Group();
+  backpack.position.set(0, 0.68, -0.22);
+
+  // Dual jetpack power tanks
+  const tankGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.48, 12);
+  const tankL = new THREE.Mesh(tankGeo, darkTitaniumMaterial);
+  tankL.position.set(-0.16, 0, 0);
+  const tankR = new THREE.Mesh(tankGeo, darkTitaniumMaterial);
+  tankR.position.set(0.16, 0, 0);
+
+  // Tank glowing power gauge strips
+  const gaugeGeo = new THREE.BoxGeometry(0.02, 0.36, 0.04);
+  const gaugeL = new THREE.Mesh(gaugeGeo, glowMaterial);
+  gaugeL.position.set(-0.16, 0, -0.09);
+  const gaugeR = new THREE.Mesh(gaugeGeo, glowMaterial);
+  gaugeR.position.set(0.16, 0, -0.09);
+
+  // Central jetpack heat exhaust manifold
+  const manifoldGeo = new THREE.BoxGeometry(0.24, 0.28, 0.12);
+  const manifold = new THREE.Mesh(manifoldGeo, primaryMaterial);
+  manifold.position.set(0, 0.02, 0);
+
+  backpack.add(tankL, tankR, gaugeL, gaugeR, manifold);
+
+  // Aerodynamic Aero-Wings (flare open during sprint/jump)
+  const wingShape = new THREE.Shape();
+  wingShape.moveTo(0, 0);
+  wingShape.lineTo(0.55, 0.15);
+  wingShape.lineTo(0.45, -0.08);
+  wingShape.lineTo(0, -0.12);
+  wingShape.closePath();
+
+  const wingGeo = new THREE.ShapeGeometry(wingShape);
+  const wingMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(primaryColor),
+    metalness: 0.9,
+    roughness: 0.2,
+    side: THREE.DoubleSide,
+  });
+
+  const leftWing = new THREE.Mesh(wingGeo, wingMat);
+  leftWing.position.set(-0.22, 0.12, 0);
+  leftWing.rotation.y = 0.2;
+  backpack.add(leftWing);
+
+  const rightWing = new THREE.Mesh(wingGeo, wingMat);
+  rightWing.position.set(0.22, 0.12, 0);
+  rightWing.rotation.y = Math.PI - 0.2;
+  backpack.add(rightWing);
+
+  body.add(backpack);
+
+  // -------------------------------------------------------------
+  // 3. SCULPTED CYBER HELMET & ANIMATED VISOR
+  // -------------------------------------------------------------
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 1.15, 0);
+
+  // Main cranial helmet (curved aerodynamic mecha shell)
+  const helmetGeo = new THREE.SphereGeometry(0.32, 24, 20);
+  helmetGeo.scale(1.0, 1.05, 1.1);
+  const head = new THREE.Mesh(helmetGeo, darkTitaniumMaterial);
   head.castShadow = true;
-  head.position.y = 1.12;
-  body.add(head);
+  headGroup.add(head);
 
-  // Curved visor with visor eye
-  const visorGeo = new THREE.BoxGeometry(0.38, 0.15, 0.16);
-  const visor = new THREE.Mesh(visorGeo, glowMaterial);
-  visor.position.set(0, 1.12, 0.23);
-  body.add(visor);
+  // Helmet side ear sensor cowlings
+  const earGeo = new THREE.CylinderGeometry(0.08, 0.1, 0.08, 12);
+  earGeo.rotateZ(Math.PI / 2);
+  const earL = new THREE.Mesh(earGeo, primaryMaterial);
+  earL.position.set(-0.33, 0.02, 0);
+  const earR = new THREE.Mesh(earGeo, primaryMaterial);
+  earR.position.set(0.33, 0.02, 0);
+  headGroup.add(earL, earR);
 
-  // Antennae
-  const antGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.26, 8);
-  const antL = new THREE.Mesh(antGeo, darkMetalMaterial);
-  antL.position.set(-0.26, 1.35, 0);
-  antL.rotation.z = 0.35;
-  body.add(antL);
+  // Forehead sensor crest with gold accent
+  const crestGeo = new THREE.BoxGeometry(0.12, 0.18, 0.16);
+  const crest = new THREE.Mesh(crestGeo, goldAccentMaterial);
+  crest.position.set(0, 0.24, 0.12);
+  headGroup.add(crest);
 
-  const antR = new THREE.Mesh(antGeo, darkMetalMaterial);
-  antR.position.set(0.26, 1.35, 0);
-  antR.rotation.z = -0.35;
-  body.add(antR);
+  // High-Tech Curved Visor Display with Digital HUD Eyes
+  const visorTexture = createRobotVisorTexture(glowColor);
+  const visorMat = new THREE.MeshBasicMaterial({
+    map: visorTexture,
+    transparent: true,
+  });
+  const visorGeo = new THREE.BoxGeometry(0.42, 0.2, 0.16);
+  const visor = new THREE.Mesh(visorGeo, visorMat);
+  visor.position.set(0, 0.01, 0.26);
+  headGroup.add(visor);
 
-  // Floating Hands with glowing palm nodes
-  const handGeo = new THREE.BoxGeometry(0.14, 0.14, 0.22);
-  const leftHand = new THREE.Mesh(handGeo, primaryMaterial);
-  leftHand.position.set(-0.5, 0.58, 0);
-  leftHand.castShadow = true;
+  // Aerodynamic Fin Antennae
+  const antGeo = new THREE.ConeGeometry(0.025, 0.32, 8);
+  const antL = new THREE.Mesh(antGeo, primaryMaterial);
+  antL.position.set(-0.25, 0.28, -0.06);
+  antL.rotation.z = 0.4;
+  antL.rotation.x = -0.2;
+  headGroup.add(antL);
+
+  const antR = new THREE.Mesh(antGeo, primaryMaterial);
+  antR.position.set(0.25, 0.28, -0.06);
+  antR.rotation.z = -0.4;
+  antR.rotation.x = -0.2;
+  headGroup.add(antR);
+
+  // Glowing orb tips on antennae
+  const orbGeo = new THREE.SphereGeometry(0.035, 8, 8);
+  const orbL = new THREE.Mesh(orbGeo, glowMaterial);
+  orbL.position.set(0, 0.16, 0);
+  antL.add(orbL);
+  const orbR = new THREE.Mesh(orbGeo, glowMaterial);
+  orbR.position.set(0, 0.16, 0);
+  antR.add(orbR);
+
+  body.add(headGroup);
+
+  // -------------------------------------------------------------
+  // 4. ARTICULATED CYBER HANDS
+  // -------------------------------------------------------------
+  const createHand = (isLeft: boolean) => {
+    const hGroup = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.24), primaryMaterial);
+    hGroup.castShadow = true;
+
+    // Wrist cuff
+    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.06, 12), darkTitaniumMaterial);
+    cuff.rotation.x = Math.PI / 2;
+    cuff.position.z = -0.13;
+    hGroup.add(cuff);
+
+    // Glowing palm repulsor node
+    const palm = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), glowMaterial);
+    palm.rotation.x = -Math.PI / 2;
+    palm.position.set(0, -0.082, 0.02);
+    hGroup.add(palm);
+
+    // 3 articulated robotic fingers
+    const fingerGeo = new THREE.BoxGeometry(0.035, 0.035, 0.08);
+    for (let f = -1; f <= 1; f++) {
+      const finger = new THREE.Mesh(fingerGeo, darkTitaniumMaterial);
+      finger.position.set(f * 0.045, 0, 0.15);
+      hGroup.add(finger);
+    }
+
+    return hGroup;
+  };
+
+  const leftHand = createHand(true);
+  leftHand.position.set(-0.52, 0.58, 0);
   body.add(leftHand);
 
-  const rightHand = new THREE.Mesh(handGeo, primaryMaterial);
-  rightHand.position.set(0.5, 0.58, 0);
-  rightHand.castShadow = true;
+  const rightHand = createHand(false);
+  rightHand.position.set(0.52, 0.58, 0);
   body.add(rightHand);
 
-  // Thruster Cone & Glow
-  const thrusterGeo = new THREE.ConeGeometry(0.2, 0.26, 14);
-  thrusterGeo.rotateX(Math.PI);
-  const thruster = new THREE.Mesh(thrusterGeo, darkMetalMaterial);
-  thruster.position.y = 0.22;
-  body.add(thruster);
+  // -------------------------------------------------------------
+  // 5. GYRO GIMBAL & DUAL TWIN HOVER THRUSTERS
+  // -------------------------------------------------------------
+  // Waist Gyroscope Gimbal Ring with 4 magnetic levitation power nodes
+  const gyroGeo = new THREE.TorusGeometry(0.38, 0.035, 8, 24);
+  gyroGeo.rotateX(Math.PI / 2);
+  const gyroRing = new THREE.Mesh(gyroGeo, darkTitaniumMaterial);
+  gyroRing.position.y = 0.38;
 
-  const glowRingGeo = new THREE.RingGeometry(0.04, 0.22, 16);
+  // 4 magnetic glowing nodes on the ring
+  for (let a = 0; a < 4; a++) {
+    const ang = (a * Math.PI) / 2;
+    const node = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), glowMaterial);
+    node.position.set(Math.cos(ang) * 0.38, 0, Math.sin(ang) * 0.38);
+    gyroRing.add(node);
+  }
+  body.add(gyroRing);
+
+  // Lower chassis base
+  const lowerChassis = new THREE.Mesh(
+    new THREE.ConeGeometry(0.24, 0.22, 16).rotateX(Math.PI),
+    darkTitaniumMaterial
+  );
+  lowerChassis.position.y = 0.22;
+  body.add(lowerChassis);
+
+  // Twin rocket thruster bells underneath
+  const bellGeo = new THREE.CylinderGeometry(0.07, 0.12, 0.16, 12);
+  const bellL = new THREE.Mesh(bellGeo, darkTitaniumMaterial);
+  bellL.position.set(-0.11, 0.12, 0);
+  const bellR = new THREE.Mesh(bellGeo, darkTitaniumMaterial);
+  bellR.position.set(0.11, 0.12, 0);
+  body.add(bellL, bellR);
+
+  // Thruster glow disc
+  const glowRingGeo = new THREE.RingGeometry(0.04, 0.26, 16);
   glowRingGeo.rotateX(Math.PI / 2);
   const thrusterGlow = new THREE.Mesh(glowRingGeo, glowMaterial);
-  thrusterGlow.position.y = 0.12;
+  thrusterGlow.position.y = 0.08;
   body.add(thrusterGlow);
 
-  // Blazing Jet Thruster Flame (scales dynamically with sprint/jump)
-  const flameGeo = new THREE.ConeGeometry(0.18, 0.65, 12);
+  // Multi-tier jet flame
+  const flameGeo = new THREE.ConeGeometry(0.2, 0.75, 12);
   flameGeo.rotateX(Math.PI);
   const flameMat = new THREE.MeshBasicMaterial({
     color: new THREE.Color(glowColor),
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.85,
   });
   const jetFlame = new THREE.Mesh(flameGeo, flameMat);
-  jetFlame.position.y = -0.15;
-  jetFlame.scale.set(0.6, 0.6, 0.6);
+  jetFlame.position.y = -0.2;
+  jetFlame.scale.set(0.65, 0.65, 0.65);
+
+  // Inner white-hot flame core
+  const coreFlameGeo = new THREE.ConeGeometry(0.1, 0.5, 10);
+  coreFlameGeo.rotateX(Math.PI);
+  const coreFlameMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.95,
+  });
+  const coreFlame = new THREE.Mesh(coreFlameGeo, coreFlameMat);
+  coreFlame.position.y = 0.08;
+  jetFlame.add(coreFlame);
+
   body.add(jetFlame);
 
-  // Tractor beam lines (visible when carrying objects)
+  // -------------------------------------------------------------
+  // 6. TRACTOR BEAMS & CONTACT SHADOW
+  // -------------------------------------------------------------
   const beamGeo = new THREE.BufferGeometry();
   const beamPositions = new Float32Array([
     -0.5, 0.58, 0.1,  0, 0.6, 1.3,
@@ -297,12 +562,12 @@ export function createCharacterMesh(primaryColor: string = '#0284c7', glowColor:
   body.add(tractorBeams);
 
   // Soft contact shadow underneath
-  const shadowGeo = new THREE.PlaneGeometry(1.3, 1.3);
+  const shadowGeo = new THREE.PlaneGeometry(1.4, 1.4);
   shadowGeo.rotateX(-Math.PI / 2);
   const shadowMat = new THREE.MeshBasicMaterial({
     map: createContactShadowTexture(),
     transparent: true,
-    opacity: 0.65,
+    opacity: 0.7,
     depthWrite: false,
   });
   const shadow = new THREE.Mesh(shadowGeo, shadowMat);
@@ -325,6 +590,10 @@ export function createCharacterMesh(primaryColor: string = '#0284c7', glowColor:
     shadow,
     primaryMaterial,
     glowMaterial,
+    leftWing,
+    rightWing,
+    chestReactor,
+    backpack,
   };
 }
 
